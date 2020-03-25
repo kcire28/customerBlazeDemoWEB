@@ -108,7 +108,7 @@ class NewCustomer extends Component{
                                 </FormGroup>
                                 <FormGroup>
                                     <Label>Phone*</Label>
-                                    <Input onChange={this.handleChange}  type="text" name="phone" id="phone" placeholder="Enter Phone" />
+                                    <Input onChange={this.handleChange}  type="text" name="phoneNumber" id="phoneNumber" placeholder="Enter Phone" />
                                 </FormGroup>
                                 <div align="center">
                                     <Button color="primary" type="submit" className="mr-2">Save</Button>
