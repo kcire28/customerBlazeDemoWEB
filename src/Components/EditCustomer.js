@@ -1,14 +1,37 @@
 import React , { Component } from 'react';
 import axios from 'axios';
-import {Button, Form, FormGroup, Input, Label, Row, Col } from 'reactstrap';
+import {Button, Form, FormGroup, Input, Label, Row, Col, Alert } from 'reactstrap';
 
+
+const SuccessSection = (props) => {
+    return <Alert color="success">
+            The customer was successfully updated!
+            </Alert>
+}
+
+const ErrorSection = (props) => {
+    return <Alert color="danger">
+            An error ocurred
+            </Alert>
+}
+
+const FullValidation = (props) => {
+    return <Alert color="warning">
+            Please complete all required fields.
+            </Alert>
+}
+
+  
 class EditCustomer extends Component{
 
     state = {
         firstName: '',
         lastName: '',
         email: '',
-        phoneNumber: ''
+        phoneNumber: '',
+        showSuccess : false,
+        showError : false,
+        showValidationMsg: false
     }
 
     constructor(props){
@@ -33,6 +56,12 @@ class EditCustomer extends Component{
 
     handleSubmit = event => {
         event.preventDefault();
+        this.setState({showSuccess: false, showError: false, showValidationMsg: false});
+
+        if(!this.state.firstName || !this.state.lastName || !this.state.email || !this.state.phoneNumber){
+            this.setState({showValidationMsg: true});
+            return;
+        }
     
         const customer = {
           firstName: this.state.firstName,
@@ -41,10 +70,12 @@ class EditCustomer extends Component{
           phoneNumber: this.state.phoneNumber
         };
 
-        axios.put(process.env.REACT_APP_API_URL+'/customer/'+this.props.match.params.id, { customer })
+        axios.put(process.env.REACT_APP_API_URL+'/customer/'+this.props.match.params.id, customer)
           .then(res => {
-                console.log(res);
                 this.findCustomer();
+                this.setState({showSuccess: true});
+          }, err=>{
+            this.setState({showError: true});
           })
       }
 
@@ -81,21 +112,28 @@ class EditCustomer extends Component{
                 <div>
                     <Row>
                         <Col sm={{ size: 6, offset: 3}}>
+                            <Row>
+                                <Col sm={{ size: 12}}>
+                                    { this.state.showSuccess ? <SuccessSection/> : null }
+                                    { this.state.showError ? <ErrorSection/> : null }
+                                    { this.state.showValidationMsg ? <FullValidation/> : null }
+                                </Col>
+                            </Row>
                             <Form onSubmit={this.handleSubmit} id="edit-form">
                                 <FormGroup>
-                                    <Label>First Name</Label>
+                                    <Label>First Name*</Label>
                                     <Input value={this.state.firstName} onChange={this.handleChange} type="text" name="firstName" id="firstName" placeholder="Enter First Name" />
                                 </FormGroup>
                                 <FormGroup>
-                                    <Label>Last Name</Label>
+                                    <Label>Last Name*</Label>
                                     <Input value={this.state.lastName} onChange={this.handleChange}  type="text" name="lastName" id="lastName" placeholder="Enter Last Name" />
                                 </FormGroup>
                                 <FormGroup>
-                                    <Label>Email</Label>
+                                    <Label>Email*</Label>
                                     <Input value={this.state.email}  onChange={this.handleChange}  type="email" name="email" id="email" placeholder="Enter email" />
                                 </FormGroup>
                                 <FormGroup>
-                                    <Label>Phone</Label>
+                                    <Label>Phone*</Label>
                                     <Input value={this.state.phoneNumber}  onChange={this.handleChange}  type="text" name="phoneNumber" id="phone" placeholder="Enter Phone" />
                                 </FormGroup>
                                 <div align="center">
